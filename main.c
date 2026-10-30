@@ -10,11 +10,12 @@
 #include "global/type.h"
 #include "global/endian.h"
 #include "global/liybmp.h"
+#include "graphics/xfb.h"
 
 FILE * indol;
 
 int main(void) {
-	float r1, g1, b1, r2, g2, b2, y1, y2, cb, cr;
+	float y1, y2, cb, cr;
 	int ir1, ig1, ib1, ir2, ig2, ib2;
 	int h, w;
 	u64 i;
@@ -22,18 +23,20 @@ int main(void) {
 	void * xfbbase, * xfbConv;
 	FILE * ramdump;/* , * xfbdump; */
 
-	indol = fopen("consoletest.elf", "rb");
+	indol = fopen("panda.dol", "rb");
 	if(!indol) return -1;
 	
 	printf("huzzah\n");
+	
+	xfb_generatelut();
 	memory_setupArenas(SYSTEM_GAMECUBE);
 	interpreter_setup();
 	hardwarereg_setup();
 
-	elf_loadFromFile(indol);
+	dol_loadFromFile(indol);
 	fclose(indol);
 
-	for(i = 0; i < 486000000; i++) {
+	for(i = 0; i < 486000; i++) {
 		nia = pc + 4;
 
 		
@@ -80,26 +83,12 @@ int main(void) {
 			y2 = ((u8 *)((u8 *)xfbbase + ycbcrfaralong))[2];
 			cr = ((u8 *)((u8 *)xfbbase + ycbcrfaralong))[3];
 			
-			r1 = y1 + 1.371 * (cr - 128.0f);
-			g1 = y1 - 0.698 * (cr - 128.0f) - 0.336 * (cb - 128.0f);
-			b1 = y1 + 1.732 * (cb - 128.0f);
-			r2 = y2 + 1.371 * (cr - 128.0f);
-			g2 = y2 - 0.698 * (cr - 128.0f) - 0.336 * (cb - 128.0f);
-			b2 = y2 + 1.732 * (cb - 128.0f);
-
-			r1 = r1 > 255 ? 255 : r1;
-			g1 = g1 > 255 ? 255 : g1;
-			b1 = b1 > 255 ? 255 : b1;
-			r2 = r2 > 255 ? 255 : r2;
-			g2 = g2 > 255 ? 255 : g2;
-			b2 = b2 > 255 ? 255 : b2;
-
-			ir1 = r1 < 0 ? 0 : r1;
-			ig1 = g1 < 0 ? 0 : g1;
-			ib1 = b1 < 0 ? 0 : b1;
-			ir2 = r2 < 0 ? 0 : r2;
-			ig2 = g2 < 0 ? 0 : g2;
-			ib2 = b2 < 0 ? 0 : b2;
+			ir1 = xfb_lutlookupr(y1, cr);
+			ig1 = xfb_lutlookupg(y1, cr, cb);
+			ib1 = xfb_lutlookupb(y1, cb);
+			ir2 = xfb_lutlookupr(y2, cr);
+			ig2 = xfb_lutlookupg(y2, cr, cb);
+			ib2 = xfb_lutlookupb(y2, cb);
 
 			((u8 *)xfbConv + rgbfaralong)[0] = ir1;
 			((u8 *)xfbConv + rgbfaralong)[1] = ig1;
