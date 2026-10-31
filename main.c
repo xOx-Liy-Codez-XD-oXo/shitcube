@@ -49,7 +49,7 @@ int main(void) {
 		opcode = memory_usread32(pc);
 		swopcode = swaponle_u32(opcode);
 		#ifdef INTERPRETER_PRINT
-		printf("%08x, %08x \n", pc, swopcode);
+		printf("%08x, %08x ", pc, swopcode);
 		#endif
 		opcode_execute(opcode);
 		#ifdef INTERPRETER_PRINT

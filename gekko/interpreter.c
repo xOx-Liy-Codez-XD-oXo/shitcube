@@ -234,7 +234,7 @@ void interpreter_setup(void) {
 	ummcr = &(regs[172]);    /* 2 */
 	upmc = &(regs[174]);     /* 4 */
 
-	if(!tablehole) tablehole = malloc((8*1024*sizeof(void*))+127);
+	if(!tablehole) tablehole = malloc((16*1024*sizeof(void*))+127);
 	sprtable = (void *)(((uip)tablehole + 63) & ~63);
 	opcode_executetablea = ((void (**)(u32))sprtable + (1024*sizeof(void*)));
 	opcode_executetableb = opcode_executetablea + (1024*sizeof(void*));
