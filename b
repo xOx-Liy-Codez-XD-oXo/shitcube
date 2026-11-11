@@ -8,4 +8,4 @@ gekko/memory.c \
 gekko/opcode.c \
 global/endian.c \
 graphics/xfb.c \
--o shitcube -Wall -Wpedantic -std=c89 -DLE
+-o shitcube -Wall -Wpedantic -std=c89 -DLE -O3 -ffast-math

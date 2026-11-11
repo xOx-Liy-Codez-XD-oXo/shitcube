@@ -3,16 +3,16 @@
 
 #include "../global/type.h"
 
-//#define INTERPRETER_PRINT
+/* #define INTERPRETER_PRINT */
 
 /* SPR reference table */
 extern u32 ** sprtable;
 
 /* Opcode execute tables */
-extern void (**opcode_executetablea)(u32);
-extern void (**opcode_executetableb)(u32);
-extern void (**opcode_executetablec)(u32);
-extern void (**opcode_executetabled)(u32);
+extern void (**opcode_executetablea)(u32, u32);
+extern void (**opcode_executetableb)(u32, u32);
+extern void (**opcode_executetablec)(u32, u32);
+extern void (**opcode_executetabled)(u32, u32);
 
 
 void interpreter_setup(void);

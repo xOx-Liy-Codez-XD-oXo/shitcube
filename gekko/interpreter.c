@@ -6,6 +6,8 @@
 
 u32 * regs;
 
+u64 cycles;
+
 u32 pc; /* Program counter */
 u32 nia; /* next instruction address */
 
@@ -71,10 +73,10 @@ void * tablehole;
 u32 ** sprtable;
 
 /* Opcode execute tables */
-void (**opcode_executetablea)(u32);
-void (**opcode_executetableb)(u32);
-void (**opcode_executetablec)(u32);
-void (**opcode_executetabled)(u32);
+void (**opcode_executetablea)(u32, u32);
+void (**opcode_executetableb)(u32, u32);
+void (**opcode_executetablec)(u32, u32);
+void (**opcode_executetabled)(u32, u32);
 
 void interpreter_setup_tables(void) {
 	int i;
@@ -236,7 +238,7 @@ void interpreter_setup(void) {
 
 	if(!tablehole) tablehole = malloc((16*1024*sizeof(void*))+127);
 	sprtable = (void *)(((uip)tablehole + 63) & ~63);
-	opcode_executetablea = ((void (**)(u32))sprtable + (1024*sizeof(void*)));
+	opcode_executetablea = ((void (**)(u32, u32))sprtable + (1024*sizeof(void*)));
 	opcode_executetableb = opcode_executetablea + (1024*sizeof(void*));
 	opcode_executetablec = opcode_executetableb + (1024*sizeof(void*));
 	opcode_executetabled = opcode_executetablec + (1024*sizeof(void*));
@@ -245,6 +247,8 @@ void interpreter_setup(void) {
 	/* printf("INTERPRETER SETUP!\n"); */
 
 	msr = 0x00002032;
+
+	cycles = 0;
 }
 
 void interpreter_free(void) {

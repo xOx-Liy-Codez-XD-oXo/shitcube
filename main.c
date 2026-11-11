@@ -18,12 +18,12 @@ int main(void) {
 	float y1, y2, cb, cr;
 	int ir1, ig1, ib1, ir2, ig2, ib2;
 	int h, w;
-	u64 i;
+	u64 instructions;
 	u32 opcode, swopcode;
 	void * xfbbase, * xfbConv;
 	FILE * ramdump;/* , * xfbdump; */
 
-	indol = fopen("panda.dol", "rb");
+	indol = fopen("pageflip.dol", "rb");
 	if(!indol) return -1;
 	
 	printf("huzzah\n");
@@ -36,22 +36,21 @@ int main(void) {
 	dol_loadFromFile(indol);
 	fclose(indol);
 
-	for(i = 0; i < 486000; i++) {
+	for(instructions = 0; instructions < 486000000; instructions++) {
 		nia = pc + 4;
 
-		
-
-		if (i % 4) {
+		if (instructions % 4) { /* Todo rewrite use cycle count */
 			tb--;
 			tbl = tb & 0xFFFFFFFF;
 			tbu = (tb >> 32) & 0xFFFFFFFF;
 		}
+		if((instructions % 10000000) == 0) printf("%08llu instructions, %08llu cycles, %lld seconds elapsed\n", instructions, cycles, cycles / 486000000);
 		opcode = memory_usread32(pc);
 		swopcode = swaponle_u32(opcode);
 		#ifdef INTERPRETER_PRINT
 		printf("%08x, %08x ", pc, swopcode);
 		#endif
-		opcode_execute(opcode);
+		opcode_execute(opcode, swopcode);
 		#ifdef INTERPRETER_PRINT
 		putchar('\n');
 		#endif

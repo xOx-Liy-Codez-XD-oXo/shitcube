@@ -4,7 +4,4 @@ shitcube
 xfb.bmp
 out.raw
 
-consoletest.dol
-consoletest.elf
-panda.dol
-transflag.dol
+*.dol

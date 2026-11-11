@@ -3,6 +3,11 @@
 
 #include "../global/type.h"
 
+/* approximately how many cycles have passed, 
+not counting cache miss etc
+for timekeeping */
+extern u64 cycles;
+
 extern u32 pc; /* Program counter */
 extern u32 nia; /* next instruction address */
 

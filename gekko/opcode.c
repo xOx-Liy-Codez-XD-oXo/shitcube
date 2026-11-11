@@ -8,44 +8,44 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void opcode_executetableA(u32 opcode) {
+void opcode_executetableA(u32 opcode, u32 swopcode) {
 	#ifdef INTERPRETER_PRINT
 	printf("Execute table A ");
 	printf("%04d ", (swaponle_u32(opcode) >> 1) & 0x03FF);
 	#endif
-	opcode_executetablea[(swaponle_u32(opcode) >> 1) & 0x03FF](opcode); /* Run opcode */
+	opcode_executetablea[(swaponle_u32(opcode) >> 1) & 0x03FF](opcode, swopcode); /* Run opcode */
 	return;
 }
 
-void opcode_executetableB(u32 opcode) {
+void opcode_executetableB(u32 opcode, u32 swopcode) {
 	#ifdef INTERPRETER_PRINT
 	printf("Execute table B ");
 	printf("%04d ", (swaponle_u32(opcode) >> 1) & 0x03FF);
 	#endif
-	opcode_executetableb[(swaponle_u32(opcode) >> 1) & 0x03FF](opcode); /* Run opcode */
+	opcode_executetableb[(swaponle_u32(opcode) >> 1) & 0x03FF](opcode, swopcode); /* Run opcode */
 	return;
 }
 
-void opcode_executetableC(u32 opcode) {
+void opcode_executetableC(u32 opcode, u32 swopcode) {
 	#ifdef INTERPRETER_PRINT
 	printf("Execute table C ");
 	#endif
-	/*opcode_executetablec[(swaponle_u32(opcode) >> 1) & 0x03FF](opcode);*/ /* Run opcode */
+	/*opcode_executetablec[(swaponle_u32(opcode) >> 1) & 0x03FF](opcode, swopcode);*/ /* Run opcode */
 	exit(0);
 	return;
 }
 
-void opcode_executetableD(u32 opcode) {
+void opcode_executetableD(u32 opcode, u32 swopcode) {
 	#ifdef INTERPRETER_PRINT
 	printf("Execute table D ");
 	#endif
-	opcode_executetabled[(swaponle_u32(opcode) >> 1) & 0x03FF](opcode); /* Run opcode */
+	opcode_executetabled[(swaponle_u32(opcode) >> 1) & 0x03FF](opcode, swopcode); /* Run opcode */
 	return;
 }
 
-void opcode_execute(u32 opcode) {
+void opcode_execute(u32 opcode, u32 swopcode) {
 	/* Opcode table for first 6 bit */
-	static void (*table[64])(u32) = {
+	static void (*table[64])(u32, u32) = {
 		ii_invalid, /* 000000 */
 		ii_invalid, /* 000001 */
 		ii_invalid, /* 000010 */
@@ -130,9 +130,9 @@ void opcode_execute(u32 opcode) {
                                                 fmrx mtfsfix fnabsx fabsx mffsx mtfsfx */
 	};
 	#ifdef BE
-	table[(opcode >> 26) & 0x3f](opcode); /* Run opcode */
+	table[(opcode >> 26) & 0x3f](opcode, swopcode); /* Run opcode */
 	#else
-	table[(opcode >> 2) & 0x3f](opcode); /* Run opcode */
+	table[(opcode >> 2) & 0x3f](opcode, swopcode); /* Run opcode */
 	#endif
 }
 

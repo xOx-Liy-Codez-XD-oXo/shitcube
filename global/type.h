@@ -15,6 +15,10 @@ typedef uint64_t u64;
 typedef uintptr_t uip;
 #endif
 
+#define sticky  
+#define gooey  
+#define stinky  
+
 #define SYSTEM_GAMECUBE 0
 #define SYSTEM_WII 1
 

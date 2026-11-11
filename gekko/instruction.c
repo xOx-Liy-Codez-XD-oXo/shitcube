@@ -12,12 +12,12 @@
 #define II_PRINT
 #endif
 
-void ii_invalid(u32 opcode) {
+void ii_invalid(u32 opcode, u32 swopcode) {
 	printf("Invalid\n");
 	exit(10000000);
 }
 
-void ii_nop(u32 opcode) {
+void ii_nop(u32 opcode, u32 swopcode) {
 	printf("No implement\n");
 	exit(10000000);
 }
@@ -48,8 +48,7 @@ void ii_checkoverflow(u32 a, u32 b, u32 c) {
 	if(d) ii_xersetoverflow();
 }
 
-void ii_add(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_add(u32 opcode, u32 swopcode) {
 	u8 rd = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1f,
 	oe = (swopcode >> 10) & 1, rc = swopcode & 1;
 	
@@ -61,10 +60,11 @@ void ii_add(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Add, r%d now %08x", rd, ((u32 *)gpr)[rd]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_addc(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_addc(u32 opcode, u32 swopcode) {
 	u8 rd = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1f,
 	oe = (swopcode >> 10) & 1, rc = swopcode & 1;
 	
@@ -79,10 +79,12 @@ void ii_addc(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Addc, r%d now %08x", rd, ((s32 *)gpr)[rd]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_adde(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_adde(u32 opcode, u32 swopcode) {
+	
 	u8 rd = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1f,
 	oe = (swopcode >> 10) & 1, rc = swopcode & 1;
 	
@@ -97,10 +99,12 @@ void ii_adde(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Adde, r%d now %08x. Not doing xer stuff..", rd, ((s32 *)gpr)[rd]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_addi(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_addi(u32 opcode, u32 swopcode) {
+	
 	u8 rd = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F;
 	s16 simm = (swopcode & 0xFFFF);
 	if(ra == 0) {
@@ -111,10 +115,12 @@ void ii_addi(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Addi, rd 0x%x, ra 0x%x, simm 0x%x. r%d now %08x", rd, ra, simm, rd, ((u32 *)gpr)[rd]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_addic(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_addic(u32 opcode, u32 swopcode) {
+	
 	u8 rd = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F;
 	s16 simm = (swopcode & 0xFFFF);
 	
@@ -123,10 +129,12 @@ void ii_addic(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Addic, rd 0x%x, ra 0x%x, simm 0x%x. r%d now %08x. Can't carry yet ..", rd, ra, simm, rd, ((u32 *)gpr)[rd]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_addis(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_addis(u32 opcode, u32 swopcode) {
+	
 	u8 rd = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F;
 	s16 simm = swopcode & 0xFFFF;
 	if(ra == 0) {
@@ -137,10 +145,12 @@ void ii_addis(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Addis, rd 0x%x, ra 0x%x, simm 0x%x. r%d now %08x", rd, ra, simm << 16, rd, ((s32 *)gpr)[rd]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_addme(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_addme(u32 opcode, u32 swopcode) {
+	
 	u8 rd = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F;
 	
 	((u32 *)gpr)[rd] = ((u32 *)gpr)[ra] - 1;
@@ -148,10 +158,12 @@ void ii_addme(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Addme, rd 0x%x, ra 0x%x, r%d now %08x. Can't carry yet ..", rd, ra, rd, ((u32 *)gpr)[rd]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_addze(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_addze(u32 opcode, u32 swopcode) {
+	
 	u8 rd = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F;
 	
 	((u32 *)gpr)[rd] = ((u32 *)gpr)[ra];
@@ -159,10 +171,12 @@ void ii_addze(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Addze, rd 0x%x, ra 0x%x, r%d now %08x. Can't carry yet ..", rd, ra, rd, ((u32 *)gpr)[rd]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_and(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_and(u32 opcode, u32 swopcode) {
+	
 	u8 ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1F, rs = (swopcode >> 21) & 0x1F,
 	rc = swopcode & 1;
 
@@ -173,10 +187,12 @@ void ii_and(u32 opcode) {
 	#ifdef II_PRINT
 	printf("And, ");
 	#endif
+
+	cycles += 1;
 }
 
-void ii_andc(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_andc(u32 opcode, u32 swopcode) {
+	
 	u8 ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1F, rs = (swopcode >> 21) & 0x1F,
 	rc = swopcode & 1;
 
@@ -187,10 +203,12 @@ void ii_andc(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Andc, ");
 	#endif
+
+	cycles += 1;
 }
 
-void ii_andi(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_andi(u32 opcode, u32 swopcode) {
+	
 	u8 rs = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F;
 	u16 uimm = swopcode & 0xFFFF;
 	((u32 *)gpr)[ra] = ((u32 *)gpr)[rs] & ((u32)uimm);
@@ -198,10 +216,12 @@ void ii_andi(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Andi, rs 0x%x, ra 0x%x, uimm 0x%08x", rs, ra, (u32)uimm);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_andis(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_andis(u32 opcode, u32 swopcode) {
+	
 	u8 rs = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F;
 	u16 uimm = swopcode & 0xFFFF;
 	((u32 *)gpr)[ra] = ((u32 *)gpr)[rs] & ((u32)uimm << 16);
@@ -209,10 +229,12 @@ void ii_andis(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Andis, rs 0x%x, ra 0x%x, uimm 0x%x", rs, ra, uimm << 16);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_b(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_b(u32 opcode, u32 swopcode) {
+	
 	u8 aa = (swopcode >> 1) & 1, lk = swopcode & 1;
 	s32 li = (swopcode >> 2) & 0x00FFFFFF;
 	u32 cia = nia - 4;
@@ -229,16 +251,17 @@ void ii_b(u32 opcode) {
 	#ifdef II_PRINT
 	printf("B, ");
 	#endif
+
+	cycles += 1;
 }
 
-void ii_bc(u32 opcode) {
-	u32 swopcode, target;
+void ii_bc(u32 opcode, u32 swopcode) {
+	u32 target;
 	u8 bo, bi, aa, lk;
 	s16 bd;
 	s32 extbd;
 	int ctr_ok, crbi, cond_ok;
 
-	swopcode = swaponle_u32(opcode);
 	aa = (swopcode >> 1) & 1, lk = swopcode & 1;
 	bo = (swopcode >> 21) & 0x1f;
 	bi = (swopcode >> 16) & 0x1f;
@@ -268,14 +291,15 @@ void ii_bc(u32 opcode) {
 	printf("Bc, Bo %x, bi %x, bd %08x, aa %d lk %d. Ctr is %d. Cr %08x, Target %08x, THE LR IS 0x%08x!!!!!!!", 
 	        bo, bi, extbd, aa, lk, ctr, cr, target, lr);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_bclr(u32 opcode) {
-	u32 swopcode, target, truelr;
+void ii_bclr(u32 opcode, u32 swopcode) {
+	u32 target, truelr;
 	u8 bo, bi, lk;
 	int ctr_ok, crbi, cond_ok;
 
-	swopcode = swaponle_u32(opcode);
 	lk = swopcode & 1;
 	bo = (swopcode >> 21) & 0x1f;
 	bi = (swopcode >> 16) & 0x1f;
@@ -299,14 +323,15 @@ void ii_bclr(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Bclr, Bo %x, bi %x, lk %d. Ctr is %d. Target %08x", bo, bi, lk, ctr, target);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_bcctr(u32 opcode) {
-	u32 swopcode, target;
+void ii_bcctr(u32 opcode, u32 swopcode) {
+	u32 target;
 	u8 bo, bi, lk;
 	int crbi, cond_ok;
 
-	swopcode = swaponle_u32(opcode);
 	lk = swopcode & 1;
 	bo = (swopcode >> 21) & 0x1f;
 	bi = (swopcode >> 16) & 0x1f;
@@ -325,14 +350,14 @@ void ii_bcctr(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Bcctr, Bo %x, bi %x, lk %d. Ctr is %d. Target %08x", bo, bi, lk, ctr, target);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_cmp(u32 opcode) {
-	u32 swopcode;
+void ii_cmp(u32 opcode, u32 swopcode) {
 	u8 ra, rb, crfd, c;
 	s32 a, b, field, shift;
 
-	swopcode = swaponle_u32(opcode);
 	ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1f, crfd = (swopcode >> 23) & 7;
 	a = ((s32 *)gpr)[ra], b = ((s32 *)gpr)[rb];
 
@@ -350,15 +375,16 @@ void ii_cmp(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Cmp, crfd %d, c %d, cr now %08x", crfd, c, cr);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_cmpi(u32 opcode) {
-	u32 swopcode, field;
+void ii_cmpi(u32 opcode, u32 swopcode) {
+	u32 field;
 	u8 ra, crfd, c;
 	s32 a, shift;
 	s16 simm;
 
-	swopcode = swaponle_u32(opcode);
 	ra = (swopcode >> 16) & 0x1F, crfd = (swopcode >> 23) & 7;
 	simm = swopcode & 0xFFFF;
 	a = ((s32 *)gpr)[ra];
@@ -377,14 +403,14 @@ void ii_cmpi(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Cmpi, crfd %d, c %d, cr now %08x", crfd, c, cr);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_cmpl(u32 opcode) {
-	u32 swopcode;
+void ii_cmpl(u32 opcode, u32 swopcode) {
 	u8 ra, rb, crfd, c;
 	u32 a, b, field, shift;
 
-	swopcode = swaponle_u32(opcode);
 	ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1f, crfd = (swopcode >> 23) & 7;
 	a = ((u32 *)gpr)[ra], b = ((u32 *)gpr)[rb];
 
@@ -402,15 +428,16 @@ void ii_cmpl(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Cmpl, crfd %d, c %d, cr now %08x", crfd, c, cr);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_cmpli(u32 opcode) {
-	u32 swopcode, field, a;
+void ii_cmpli(u32 opcode, u32 swopcode) {
+	u32 field, a;
 	u8 ra, crfd, c;
 	s32 shift;
 	u16 uimm;
 
-	swopcode = swaponle_u32(opcode);
 	ra = (swopcode >> 16) & 0x1F, crfd = (swopcode >> 23) & 7;
 	uimm = swopcode & 0xFFFF;
 	a = ((s32 *)gpr)[ra];
@@ -429,10 +456,12 @@ void ii_cmpli(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Cmpli, crfd %d, c %d, cr now %08x", crfd, c, cr);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_cntlzw(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_cntlzw(u32 opcode, u32 swopcode) {
+	
 	u8 rs = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F;
 	
 	int n = 0;
@@ -446,24 +475,29 @@ void ii_cntlzw(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Cntlzw, rs 0x%x, ra 0x%x", rs, ra);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_dcbf(u32 opcode) {
+void ii_dcbf(u32 opcode, u32 swopcode) {
 	#ifdef II_PRINT
 	printf("Dcbf, ");
 	#endif
 	/* There is no cache.. do nothing */
+
+	cycles += 3;
 }
 
-void ii_dcbi(u32 opcode) {
+void ii_dcbi(u32 opcode, u32 swopcode) {
 	#ifdef II_PRINT
 	printf("Dcbi, ");
 	#endif
 	/* There is no cache.. do nothing */
+
+	cycles += 3;
 }
 
-void ii_divwu(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_divwu(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1F, rd = (swopcode >> 21) & 0x1F,
 	oe = (swopcode >> 10) & 1, rc = swopcode & 1;
 
@@ -475,17 +509,20 @@ void ii_divwu(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Divwu, ");
 	#endif
+
+	cycles += 19;
 }
 
-void ii_eieio(u32 opcode) {
+void ii_eieio(u32 opcode, u32 swopcode) {
 	#ifdef II_PRINT
 	printf("Eieio, ");
 	#endif
 	/* Already in order.. do nothing */
+
+	cycles += 1;
 }
 
-void ii_extsb(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_extsb(u32 opcode, u32 swopcode) {
 	u8 rs = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F;
 	
 	s8 tiny_liy = ((s32 *)gpr)[rs] & 0xFF;
@@ -494,10 +531,11 @@ void ii_extsb(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Extsb, rd 0x%x, ra 0x%x, r%d now %08x.", rs, ra, rs, gpr[rs]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_extsh(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_extsh(u32 opcode, u32 swopcode) {
 	u8 rs = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F;
 	
 	s16 BIG_liy = ((s32 *)gpr)[rs] & 0xFFFF;
@@ -506,43 +544,54 @@ void ii_extsh(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Extsh, rd 0x%x, ra 0x%x, r%d now %08x.", rs, ra, rs, gpr[rs]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_fmr(u32 opcode) {
+void ii_fmr(u32 opcode, u32 swopcode) {
 	/* Todo actually do stuff */
 	#ifdef II_PRINT
 	printf("Fmr, (STUB)");
 	#endif
+
+	cycles += 1; /* Pipelined 1-1-1.. assume best case ig */
 }
 
-void ii_fneg(u32 opcode) {
+void ii_fneg(u32 opcode, u32 swopcode) {
 	/* Todo actually do stuff */
 	#ifdef II_PRINT
 	printf("Fneg, (STUB)");
 	#endif
+
+	cycles += 1; /* Pipelined 1-1-1 */
 }
 
-void ii_fnabs(u32 opcode) {
+void ii_fnabs(u32 opcode, u32 swopcode) {
 	/* Todo actually do stuff */
 	#ifdef II_PRINT
 	printf("Fnabs, (STUB)");
 	#endif
+
+	cycles += 1; /* Pipelined 1-1-1 */
 }
 
-void ii_isync(u32 opcode) {
+void ii_isync(u32 opcode, u32 swopcode) {
 	#ifdef II_PRINT
 	printf("Isync, ");
 	#endif
 	/* Already in sync.. do nothing */
+
+	cycles += 2;
 }
 
-void ii_icbi(u32 opcode) {
+void ii_icbi(u32 opcode, u32 swopcode) {
 	printf("LIY! ");
 	/* NO CACHE!.. do nothing */
+
+	cycles += 3; /* 3:4 */
 }
 
-void ii_lbz(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_lbz(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rd = (swopcode >> 21) & 0x1F;
 	s16 d = swopcode & 0xFFFF;
 	u32 b, ea;
@@ -553,10 +602,11 @@ void ii_lbz(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Lbz, ra 0x%x, rd 0x%x, d %d (0x%04x), ea 0x%08x. r%d now %08x", ra, rd, d, d, ea, rd, gpr[rd]);
 	#endif
+
+	cycles += 2; /* 2:1 */
 }
 
-void ii_lbzu(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_lbzu(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rd = (swopcode >> 21) & 0x1F;
 	s16 d = swopcode & 0xFFFF;
 	u32 b, ea;
@@ -566,12 +616,13 @@ void ii_lbzu(u32 opcode) {
 	gpr[rd] = memory_read8(ea);
 	gpr[ra] = ea;
 	#ifdef II_PRINT
-	printf("Lbz, ra 0x%x, rd 0x%x, d %d (0x%04x), ea 0x%08x. r%d now %08x", ra, rd, d, d, ea, rd, gpr[rd]);
+	printf("Lbzu, ra 0x%x, rd 0x%x, d %d (0x%04x), ea 0x%08x. r%d now %08x", ra, rd, d, d, ea, rd, gpr[rd]);
 	#endif
+
+	cycles += 2; /* 2:1 */
 }
 
-void ii_lbzx(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_lbzx(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1F, rd = (swopcode >> 21) & 0x1F;
 	u32 b, ea;
 	if(ra == 0) b = 0;
@@ -581,11 +632,13 @@ void ii_lbzx(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Lbzx, ra 0x%x, rd 0x%x, rb 0x%04x, ea 0x%08x. r%d now %08x", ra, rd, rb, ea, rd, gpr[rd]);
 	#endif
+
+	cycles += 2; /* 2:1 */
 }
 
-void ii_lfd(u32 opcode) {
+void ii_lfd(u32 opcode, u32 swopcode) {
 	/* Todo actually do stuff */
-	/*u32 swopcode = swaponle_u32(opcode);
+	/*
 	u8 ra = (swopcode >> 16) & 0x1F, rd = (swopcode >> 21) & 0x1F;
 	s16 d = swopcode & 0xFFFF;
 	u32 b, ea;
@@ -596,10 +649,11 @@ void ii_lfd(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Lfd, (STUB)");
 	#endif
+
+	cycles += 2; /* 2:1 */
 }
 
-void ii_lha(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_lha(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rd = (swopcode >> 21) & 0x1F;
 	s16 d = swopcode & 0xFFFF, micro_liys;
 	u32 b, ea;
@@ -612,10 +666,11 @@ void ii_lha(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Lha, ra 0x%x, rd 0x%x, d %d (0x%04x), ea 0x%08x. r%d now %08x", ra, rd, d, d, ea, rd, gpr[rd]);
 	#endif
+
+	cycles += 2; /* 2:1 */
 }
 
-void ii_lhz(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_lhz(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rd = (swopcode >> 21) & 0x1F;
 	s16 d = swopcode & 0xFFFF;
 	u32 b, ea;
@@ -626,10 +681,11 @@ void ii_lhz(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Lhz, ra 0x%x, rd 0x%x, d %d (0x%04x), ea 0x%08x. r%d now %08x", ra, rd, d, d, ea, rd, gpr[rd]);
 	#endif
+
+	cycles += 2; /* 2:1 */
 }
 
-void ii_lhzu(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_lhzu(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rd = (swopcode >> 21) & 0x1F;
 	s16 d = swopcode & 0xFFFF;
 	u32 b, ea;
@@ -643,8 +699,7 @@ void ii_lhzu(u32 opcode) {
 	#endif
 }
 
-void ii_lhzx(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_lhzx(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1F, rd = (swopcode >> 21) & 0x1F;
 	u32 b, ea;
 	if(ra == 0) b = 0;
@@ -656,8 +711,7 @@ void ii_lhzx(u32 opcode) {
 	#endif
 }
 
-void ii_lmw(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_lmw(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rd = (swopcode >> 21) & 0x1F, r = 0;
 	s16 d = swopcode & 0xFFFF;
 	u32 b, ea;
@@ -670,15 +724,17 @@ void ii_lmw(u32 opcode) {
 		((u32 *)gpr)[r] = memory_read32(ea);
 		r++;
 		ea += 4;
+		cycles += 1;
 	}
 
 	#ifdef II_PRINT
 	printf("Lmw, ra 0x%x, rd 0x%x, d 0x%04x, ea 0x%08x", ra, rd, d, ea);
 	#endif
+
+	cycles += 2; /* 2 + n */
 }
 
-void ii_lwz(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_lwz(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rd = (swopcode >> 21) & 0x1F;
 	s16 d = swopcode & 0xFFFF;
 	u32 b, ea;
@@ -689,10 +745,12 @@ void ii_lwz(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Lwz, ra 0x%x, rd 0x%x, d %d (0x%04x), ea 0x%08x. r%d now %08x", ra, rd, d, d, ea, rd, gpr[rd]);
 	#endif
+
+	cycles += 2; /* 2:1 */
 }
 
-void ii_lwzu(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_lwzu(u32 opcode, u32 swopcode) {
+	
 	u8 ra = (swopcode >> 16) & 0x1F, rd = (swopcode >> 21) & 0x1F;
 	s16 d = swopcode & 0xFFFF;
 	
@@ -703,10 +761,12 @@ void ii_lwzu(u32 opcode) {
 	printf("Lwzu, ra 0x%x, rd 0x%x, d 0x%04x, ea 0x%08x. r%d now %08x and r%d now %08x", 
 	        ra, rd, d, ea, rd, gpr[rd], ra, gpr[ra]);
 	#endif
+
+	cycles += 2; /* 2:1 */
 }
 
-void ii_lwzx(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_lwzx(u32 opcode, u32 swopcode) {
+	
 	u8 ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1F, rd = (swopcode >> 21) & 0x1F;
 	u32 b, ea;
 	if(ra == 0) b = 0;
@@ -716,30 +776,36 @@ void ii_lwzx(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Lwzx, ra 0x%x, rd 0x%x, rb 0x%04x, ea 0x%08x. r%d now %08x", ra, rd, rb, ea, rd, gpr[rd]);
 	#endif
+
+	cycles += 2; /* 2:1 */
 }
 
-void ii_mfcr(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_mfcr(u32 opcode, u32 swopcode) {
+	
 	u8 rd = (u32)(swopcode >> 21) & 0x1F;
 
 	#ifdef II_PRINT
 	printf("Mfcr moves CR (%08x) to gpr %d.", cr, rd);
 	#endif
 	((u32 *)gpr)[rd] = cr;
+
+	cycles += 1;
 }
 
-void ii_mfmsr(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_mfmsr(u32 opcode, u32 swopcode) {
+	
 	u8 rd = (u32)(swopcode >> 21) & 0x1F;
 
 	#ifdef II_PRINT
 	printf("Mfmsr moves MSR (%08x) to gpr %d.", msr, rd);
 	#endif
 	((u32 *)gpr)[rd] = msr;
+
+	cycles += 1;
 }
 
-void ii_mfspr(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_mfspr(u32 opcode, u32 swopcode) {
+	
 	u16 na = (u32)(swopcode >> 11) & 0x1f, nb = (u32)(swopcode >> 16) & 0x1f;
 	u32 n = (na << 5) | nb;
 	u8 rd = (u32)(swopcode >> 21) & 0x1F;
@@ -747,10 +813,11 @@ void ii_mfspr(u32 opcode) {
 	printf("Mfspr moves SPR reg %d (%08x) to gpr %d. %d %d", n, *(sprtable[n]), rd, na, nb);
 	#endif
 	((u32 *)gpr)[rd] = *(sprtable[n]);
+
+	cycles += 1;
 }
 
-void ii_mftb(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_mftb(u32 opcode, u32 swopcode) {
 	u16 na = (u32)(swopcode >> 11) & 0x1f, nb = (u32)(swopcode >> 16) & 0x1f;
 	u32 n = (na << 5) | nb;
 	u8 rd = (u32)(swopcode >> 21) & 0x1F;
@@ -758,10 +825,12 @@ void ii_mftb(u32 opcode) {
 	printf("Mftb moves SPR reg %d (%08x) to gpr %d. %d %d", n, *(sprtable[n]), rd, na, nb);
 	#endif
 	((u32 *)gpr)[rd] = *(sprtable[n]);
+
+	cycles += 1;
 }
 
-void ii_mtcrf(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode), mask, i;
+void ii_mtcrf(u32 opcode, u32 swopcode) {
+	u32 mask, i;
 	u8 rs = (swopcode >> 21) & 0x1F, crm = (swopcode >> 12);
 	
 	if(crm == 0xFF) cr = gpr[rs];
@@ -774,12 +843,14 @@ void ii_mtcrf(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Mtcrf, ");
 	#endif
+
+	cycles += 1;
 }
 
-void ii_mtsr(u32 opcode) {
+void ii_mtsr(u32 opcode, u32 swopcode) {
 	/* for memory arrangement? we use hardcoded sensible defaults */
 	/*
-	u32 swopcode = swaponle_u32(opcode);
+	
 	u8 rs = (swopcode >> 21) & 0x1F;
 	u8 whichseg = (swopcode >> 16) & 0x0f;
 	sr[whichseg] = ((u32 *)gpr)[rs];
@@ -787,31 +858,37 @@ void ii_mtsr(u32 opcode) {
 	printf("Mtsr, ");
 	#endif
 	*/
+
+	cycles += 1;
 }
 
-void ii_mtmsr(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_mtmsr(u32 opcode, u32 swopcode) {
 	u8 rs = (swopcode >> 21) & 0x1F;
 	msr = ((u32 *)gpr)[rs];
 	#ifdef II_PRINT
 	printf("Mtmsr, ");
 	#endif
+
+	cycles += 1;
 }
 
-void ii_mtfsf(u32 opcode) {
+void ii_mtfsf(u32 opcode, u32 swopcode) {
 	#ifdef II_PRINT
 	printf("Mtfsf, (STUB)");
 	#endif
+
+	cycles += 1;
 }
 
-void ii_mtfsb1(u32 opcode) {
+void ii_mtfsb1(u32 opcode, u32 swopcode) {
 	#ifdef II_PRINT
 	printf("Mtfsb1, (STUB)");
 	#endif
+
+	cycles += 1;
 }
 
-void ii_mtspr(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_mtspr(u32 opcode, u32 swopcode) {
 	u16 na = (u32)(swopcode >> 11) & 0x1f, nb = (u32)(swopcode >> 16) & 0x1f;
 	u32 n = (na << 5) | nb;
 	u8 rs = (swopcode >> 21) & 0x1F;
@@ -819,10 +896,12 @@ void ii_mtspr(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Mtspr moves gpr %d to SPR reg %d (now %08x)", rs, n, *(sprtable[n]));
 	#endif
+
+	cycles += 1;
 }
 
-void ii_mulli(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_mulli(u32 opcode, u32 swopcode) {
+	
 	u8 ra = (swopcode >> 16) & 0x1F, rd = (swopcode >> 21) & 0x1F;
 	s16 simm = swopcode & 0xFFFF;
 
@@ -831,11 +910,13 @@ void ii_mulli(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Mulli, r%d now %08x", rd, ((s32 *)gpr)[rd]);
 	#endif
+
+	cycles += 5; /* "2,3" wat dat mean */
 }
 
-void ii_mullw(u32 opcode) {
+void ii_mullw(u32 opcode, u32 swopcode) {
 	s64 prod;
-	u32 swopcode = swaponle_u32(opcode), prodb;
+	u32 prodb;
 	u8 ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1F, rd = (swopcode >> 21) & 0x1F,
 	oe = (swopcode >> 10) & 1, rc = swopcode & 1;
 	prod = ((s32*)gpr)[ra] * ((s32*)gpr)[rb];
@@ -851,10 +932,12 @@ void ii_mullw(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Mullw, ");
 	#endif
+
+	cycles += 5; /* i cant even find this one in the latency list */
 }
 
-void ii_mulhw(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_mulhw(u32 opcode, u32 swopcode) {
+	
 	u8 ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1F, rd = (swopcode >> 21) & 0x1F,
 	oe = (swopcode >> 10) & 1, rc = swopcode & 1;
 	s64 prod;
@@ -870,10 +953,12 @@ void ii_mulhw(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Mulhw, ");
 	#endif
+
+	cycles += 14; /* "2,3,4,5" wat dat mean */
 }
 
-void ii_mulhwu(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_mulhwu(u32 opcode, u32 swopcode) {
+	
 	u8 ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1F, rd = (swopcode >> 21) & 0x1F,
 	oe = (swopcode >> 10) & 1, rc = swopcode & 1;
 	u64 prod;
@@ -889,10 +974,12 @@ void ii_mulhwu(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Mulhwu, ");
 	#endif
+
+	cycles += 20; /* "2,3,4,5,6" wat dat mean */
 }
 
-void ii_neg(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_neg(u32 opcode, u32 swopcode) {
+	
 	u8 ra = (swopcode >> 16) & 0x1F, oe = (swopcode >> 10) & 1,
 	rd = (swopcode >> 21) & 0x1F, rc = swopcode & 1; 
 
@@ -903,10 +990,12 @@ void ii_neg(u32 opcode) {
 	
 	if(oe && (gpr[ra] == 0x80000000)) ii_xersetoverflow();
 	if(rc) ii_cr0thing(gpr[ra]);
+
+	cycles += 1;
 }
 
-void ii_nor(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_nor(u32 opcode, u32 swopcode) {
+	
 	u8 ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1f, 
 	rs = (swopcode >> 21) & 0x1F, rc = swopcode & 1; 
 
@@ -916,10 +1005,11 @@ void ii_nor(u32 opcode) {
 	#endif
 	
 	if(rc) ii_cr0thing(gpr[ra]);
+
+	cycles += 1;
 }
 
-void ii_or(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_or(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1f, 
 	rs = (swopcode >> 21) & 0x1F, rc = swopcode & 1; 
 
@@ -929,10 +1019,11 @@ void ii_or(u32 opcode) {
 	#endif
 	
 	if(rc) ii_cr0thing(gpr[ra]);
+
+	cycles += 1;
 }
 
-void ii_ori(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_ori(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rs = (swopcode >> 21) & 0x1F;
 	u16 uimm = swopcode & 0xFFFF;
 	
@@ -941,10 +1032,11 @@ void ii_ori(u32 opcode) {
 	printf("Ori, ra 0x%x, rs 0x%x, uimm 0x%08x. r%d now %08x", 
 	        ra, rs, (u32)uimm, ra, ((u32 *)gpr)[ra]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_oris(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_oris(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rs = (swopcode >> 21) & 0x1F;
 	u16 uimm = swopcode & 0xFFFF;
 	
@@ -953,21 +1045,27 @@ void ii_oris(u32 opcode) {
 	printf("Oris, ra 0x%x, rs 0x%x, uimm 0x%08x. r%d now %08x", 
 	        ra, rs, (u32)uimm, ra, ((u32 *)gpr)[ra]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_ps_mr(u32 opcode) {
+void ii_ps_mr(u32 opcode, u32 swopcode) {
 	#ifdef II_PRINT
 	printf("Ps_mr, (STUB)");
 	#endif
+
+	cycles += 1; /* 1-1-1 */
 }
 
-void ii_psq_l(u32 opcode) {
+void ii_psq_l(u32 opcode, u32 swopcode) {
 	#ifdef II_PRINT
 	printf("Psq_l, (STUB)");
 	#endif
+
+	cycles += 1;
 }
 
-void ii_rfi(u32 opcode) {
+void ii_rfi(u32 opcode, u32 swopcode) {
 	/* todo: take pending exceptions */
 	msr = srr[1];
 	nia = srr[0] & ~0x03;
@@ -975,10 +1073,12 @@ void ii_rfi(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Rfi");
 	#endif
+
+	cycles += 2;
 }
 
-void ii_rlwimi(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode), r, m;
+void ii_rlwimi(u32 opcode, u32 swopcode) {
+	u32 r, m;
 	u8 rs = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F, n,
 	sh = (swopcode >> 11) & 0x1f, mb = (swopcode >> 6) & 0x1f, me = (swopcode >> 1) & 0x1f,
 	rc = swopcode & 1;
@@ -997,10 +1097,12 @@ void ii_rlwimi(u32 opcode) {
 	printf("Rlwimi %02x, %02x, %02x, %02x, %02x, %d, %08x, out %08x", 
 	        rs, ra, sh, mb, me, rc, cr, ((u32 *)gpr)[ra]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_rlwinm(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode), r, m;
+void ii_rlwinm(u32 opcode, u32 swopcode) {
+	u32 r, m;
 	u8 rs = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F, n,
 	sh = (swopcode >> 11) & 0x1f, mb = (swopcode >> 6) & 0x1f, me = (swopcode >> 1) & 0x1f,
 	rc = swopcode & 1;
@@ -1019,9 +1121,11 @@ void ii_rlwinm(u32 opcode) {
 	printf("Rlwinm %02x, %02x, %02x, %02x, %02x, %d, %08x, out %08x", 
 	        rs, ra, sh, mb, me, rc, cr, ((u32 *)gpr)[ra]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_sc(u32 opcode) {
+void ii_sc(u32 opcode, u32 swopcode) {
 	srr[0] = nia;
 	srr[1] = 0;
 	srr[1] = msr;
@@ -1030,11 +1134,12 @@ void ii_sc(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Sc, ");
 	#endif
+
+	cycles += 2;
 }
 
 
-void ii_slw(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_slw(u32 opcode, u32 swopcode) {
 	u8 rs = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1f;
 
 	if(gpr[rb] & 32) gpr[ra] = 0;
@@ -1045,10 +1150,11 @@ void ii_slw(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Slw, rs 0x%x, ra 0x%x, rb 0x%x ", rs, ra, rb);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_srw(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_srw(u32 opcode, u32 swopcode) {
 	u8 rs = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1f;
 
 	if(gpr[rb] & 32) gpr[ra] = 0;
@@ -1059,10 +1165,11 @@ void ii_srw(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Srw, rs 0x%x, ra 0x%x, rb 0x%x ", rs, ra, rb);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_sraw(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_sraw(u32 opcode, u32 swopcode) {
 	u8 rs = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1f;
 
 	if(gpr[rb] & 32) gpr[ra] = 0;
@@ -1073,10 +1180,11 @@ void ii_sraw(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Sraw, rs 0x%x, ra 0x%x, rb 0x%x .. acting the same as srw for now", rs, ra, rb);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_srawi(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_srawi(u32 opcode, u32 swopcode) {
 	u8 rs = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F, sh = (swopcode >> 11) & 0x1F;
 
 	gpr[ra] = gpr[rs] >> sh;
@@ -1086,10 +1194,11 @@ void ii_srawi(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Srawi, rs 0x%x, ra 0x%x.. acting the same as srw for now", rs, ra);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_stb(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_stb(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rs = (swopcode >> 21) & 0x1F;
 	s16 d = swopcode & 0xFFFF;
 	u32 b, ea;
@@ -1100,10 +1209,11 @@ void ii_stb(u32 opcode) {
 	printf("Stb, ra 0x%x, rs 0x%x, d 0x%04x, ea 0x%08x", ra, rs, d, ea);
 	#endif
 	memory_write8(ea, (u8)(gpr[rs]&0xFF));
+
+	cycles += 2; /* 2:1 */
 }
 
-void ii_stbu(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_stbu(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rs = (swopcode >> 21) & 0x1F;
 	s16 d = swopcode & 0xFFFF;
 	u32 ea = ((u32 *)gpr)[ra] + d;
@@ -1113,10 +1223,11 @@ void ii_stbu(u32 opcode) {
 	#endif
 	memory_write8(ea, gpr[rs]);
 	((u32 *)gpr)[ra] = ea;
+
+	cycles += 2; /* 2:1 */
 }
 
-void ii_stbx(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_stbx(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rs = (swopcode >> 21) & 0x1F, rb = (swopcode >> 11) & 0x1f;
 	u32 b, ea;
 	if(ra == 0) b = 0;
@@ -1127,10 +1238,11 @@ void ii_stbx(u32 opcode) {
 	printf(" wants to store contents of gpr %d (%08x) at %08x", rs, gpr[rs], ea);
 	#endif
 	memory_write8(ea, gpr[rs]);
+
+	cycles += 2; /* 2:1 */
 }
 
-void ii_sth(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_sth(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rs = (swopcode >> 21) & 0x1F;
 	s16 d = swopcode & 0xFFFF;
 	u32 b, ea;
@@ -1141,10 +1253,11 @@ void ii_sth(u32 opcode) {
 	printf("Sth, ra 0x%x, rs 0x%x, d 0x%04x, ea 0x%08x", ra, rs, d, ea);
 	#endif
 	memory_write16(ea, (u16)(gpr[rs]&0xFFFF));
+
+	cycles += 2; /* 2:1 */
 }
 
-void ii_sthx(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_sthx(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rs = (swopcode >> 21) & 0x1F, rb = (swopcode >> 11) & 0x1f;
 	u32 b, ea;
 	if(ra == 0) b = 0;
@@ -1155,10 +1268,11 @@ void ii_sthx(u32 opcode) {
 	printf(" wants to store contents of gpr %d (%08x) at %08x", rs, gpr[rs], ea);
 	#endif
 	memory_write16(ea, gpr[rs]);
+
+	cycles += 2; /* 2:1 */
 }
 
-void ii_sthu(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_sthu(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rs = (swopcode >> 21) & 0x1F;
 	s16 d = swopcode & 0xFFFF;
 	u32 b, ea;
@@ -1170,10 +1284,11 @@ void ii_sthu(u32 opcode) {
 	#endif
 	memory_write16(ea, (u16)(gpr[rs]&0xFFFF));
 	((u32 *)gpr)[ra] = ea;
+
+	cycles += 2; /* 2:1 */
 }
 
-void ii_stmw(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_stmw(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rs = (swopcode >> 21) & 0x1F, r;
 	s16 d = swopcode & 0xFFFF;
 	u32 b, ea;
@@ -1190,11 +1305,13 @@ void ii_stmw(u32 opcode) {
 		memory_write32(ea, ((u32 *)gpr)[r]);
 		r++;
 		ea += 4;
+		cycles += 1;
 	}
+
+	cycles += 2; /* 2 + n */
 }
 
-void ii_stw(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_stw(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rs = (swopcode >> 21) & 0x1F;
 	s16 d = swopcode & 0xFFFF;
 	u32 b, ea;
@@ -1206,10 +1323,11 @@ void ii_stw(u32 opcode) {
 	printf(" wants to store contents of gpr %d (%08x) at %08x", rs, gpr[rs], ea);
 	#endif
 	memory_write32(ea, gpr[rs]);
+
+	cycles += 2;
 }
 
-void ii_stwu(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_stwu(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rs = (swopcode >> 21) & 0x1F;
 	s16 d = swopcode & 0xFFFF;
 	u32 ea = ((u32 *)gpr)[ra] + d;
@@ -1219,10 +1337,11 @@ void ii_stwu(u32 opcode) {
 	#endif
 	memory_write32(ea, gpr[rs]);
 	((u32 *)gpr)[ra] = ea;
+
+	cycles += 2;
 }
 
-void ii_stwx(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_stwx(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rs = (swopcode >> 21) & 0x1F, rb = (swopcode >> 11) & 0x1f;
 	u32 b, ea;
 	if(ra == 0) b = 0;
@@ -1233,10 +1352,11 @@ void ii_stwx(u32 opcode) {
 	printf(" wants to store contents of gpr %d (%08x) at %08x", rs, gpr[rs], ea);
 	#endif
 	memory_write32(ea, gpr[rs]);
+
+	cycles += 2;
 }
 
-void ii_subf(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_subf(u32 opcode, u32 swopcode) {
 	u8 rd = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1f,
 	oe = (swopcode >> 10) & 1, rc = swopcode & 1;
 	
@@ -1250,10 +1370,11 @@ void ii_subf(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Subf, r%d %08x, r%d %08x, r%d %08x", rd, ((s32 *)gpr)[rd], ra, ((s32 *)gpr)[ra], rb, ((s32 *)gpr)[rb]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_subfc(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_subfc(u32 opcode, u32 swopcode) {
 	u8 rd = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1f,
 	oe = (swopcode >> 10) & 1, rc = swopcode & 1;
 	
@@ -1267,10 +1388,11 @@ void ii_subfc(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Subfc, r%d %08x, r%d %08x, r%d %08x. We don't carry yet", rd, ((s32 *)gpr)[rd], ra, ((s32 *)gpr)[ra], rb, ((s32 *)gpr)[rb]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_subfic(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_subfic(u32 opcode, u32 swopcode) {
 	u8 rd = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F;
 	s16 simm = swopcode & 0xFFFF;
 	
@@ -1279,17 +1401,20 @@ void ii_subfic(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Subfic, r%d %08x, r%d %08x. We don't carry yet", rd, ((s32 *)gpr)[rd], ra, ((s32 *)gpr)[ra]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_sync(u32 opcode) {
+void ii_sync(u32 opcode, u32 swopcode) {
 	#ifdef II_PRINT
 	printf("Sync, ");
 	#endif
 	/* We don't emulate cache */
+
+	cycles += 3;
 }
 
-void ii_xor(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_xor(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1f, 
 	rs = (swopcode >> 21) & 0x1F, rc = swopcode & 1; 
 
@@ -1299,10 +1424,11 @@ void ii_xor(u32 opcode) {
 	#endif
 	
 	if(rc) ii_cr0thing(gpr[ra]);
+
+	cycles += 1;
 }
 
-void ii_xori(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_xori(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rs = (swopcode >> 21) & 0x1F;
 	u16 uimm = swopcode & 0xFFFF;
 	
@@ -1310,10 +1436,11 @@ void ii_xori(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Xori, ra 0x%x, rs 0x%x, uimm 0x%08x. r%d now %08x", ra, rs, (u32)uimm, ra, ((u32 *)gpr)[ra]);
 	#endif
+
+	cycles += 1;
 }
 
-void ii_xoris(u32 opcode) {
-	u32 swopcode = swaponle_u32(opcode);
+void ii_xoris(u32 opcode, u32 swopcode) {
 	u8 ra = (swopcode >> 16) & 0x1F, rs = (swopcode >> 21) & 0x1F;
 	u16 uimm = swopcode & 0xFFFF;
 	
@@ -1321,5 +1448,7 @@ void ii_xoris(u32 opcode) {
 	#ifdef II_PRINT
 	printf("Xoris, ra 0x%x, rs 0x%x, uimm 0x%08x. r%d now %08x", ra, rs, (u32)uimm, ra, ((u32 *)gpr)[ra]);
 	#endif
+
+	cycles += 1;
 }
 
