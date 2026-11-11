@@ -36,15 +36,14 @@ int main(void) {
 	dol_loadFromFile(indol);
 	fclose(indol);
 
-	for(instructions = 0; instructions < 486000000; instructions++) {
+	for(instructions = 0; instructions < 486000; instructions++) {
 		nia = pc + 4;
 
-		if (instructions % 4) { /* Todo rewrite use cycle count */
-			tb--;
-			tbl = tb & 0xFFFFFFFF;
-			tbu = (tb >> 32) & 0xFFFFFFFF;
-		}
-		if((instructions % 10000000) == 0) printf("%08llu instructions, %08llu cycles, %lld seconds elapsed\n", instructions, cycles, cycles / 486000000);
+		tb = ~(u64)0 - cycles;
+		tbl = tb & 0xFFFFFFFF;
+		tbu = (tb >> 32) & 0xFFFFFFFF;
+
+		if((instructions % 1000) == 0) printf("%08llu instructions, %08llu cycles, %lld seconds elapsed\n", instructions, cycles, cycles / 486000000);
 		opcode = memory_usread32(pc);
 		swopcode = swaponle_u32(opcode);
 		#ifdef INTERPRETER_PRINT
@@ -67,35 +66,33 @@ int main(void) {
 	/* hardwarereg_printall(); */
 
 	xfbConv = malloc(640*480*3);
-	if(viregs[7] & 0x10000000) /* page offset bit */
-		xfbbase = (u8 *)mem_arenaA + ((viregs[7] & 0x0FFFFFFF) << 5);
-	else
-		xfbbase = (u8 *)mem_arenaA + (viregs[7]);
-	for(h = 0; h < 480; h++) {
-		for(w = 0; w < 320; w++) {
-			int faralong = (h*320)+w;
-			int ycbcrfaralong = faralong * 4;
-			int rgbfaralong = faralong * 6;
-			
-			y1 = ((u8 *)((u8 *)xfbbase + ycbcrfaralong))[0];
-			cb = ((u8 *)((u8 *)xfbbase + ycbcrfaralong))[1];
-			y2 = ((u8 *)((u8 *)xfbbase + ycbcrfaralong))[2];
-			cr = ((u8 *)((u8 *)xfbbase + ycbcrfaralong))[3];
-			
-			ir1 = xfb_lutlookupr(y1, cr);
-			ig1 = xfb_lutlookupg(y1, cr, cb);
-			ib1 = xfb_lutlookupb(y1, cb);
-			ir2 = xfb_lutlookupr(y2, cr);
-			ig2 = xfb_lutlookupg(y2, cr, cb);
-			ib2 = xfb_lutlookupb(y2, cb);
+	if(viregs[7] & 0x10000000) xfbbase = (u8 *)mem_arenaA + ((viregs[7] & 0x0FFFFFFF) << 5); /* page offset bit */
+	else xfbbase = (u8 *)mem_arenaA + (viregs[7]);
 
-			((u8 *)xfbConv + rgbfaralong)[0] = ir1;
-			((u8 *)xfbConv + rgbfaralong)[1] = ig1;
-			((u8 *)xfbConv + rgbfaralong)[2] = ib1;
-			((u8 *)xfbConv + rgbfaralong)[3] = ir2;
-			((u8 *)xfbConv + rgbfaralong)[4] = ig2;
-			((u8 *)xfbConv + rgbfaralong)[5] = ib2;
-		}
+	for(h = 0; h < 480; h++)
+	for(w = 0; w < 320; w++) {
+		int faralong = (h*320)+w;
+		int ycbcrfaralong = faralong * 4;
+		int rgbfaralong = faralong * 6;
+		
+		y1 = ((u8 *)((u8 *)xfbbase + ycbcrfaralong))[0];
+		cb = ((u8 *)((u8 *)xfbbase + ycbcrfaralong))[1];
+		y2 = ((u8 *)((u8 *)xfbbase + ycbcrfaralong))[2];
+		cr = ((u8 *)((u8 *)xfbbase + ycbcrfaralong))[3];
+		
+		ir1 = xfb_lutlookupr(y1, cr);
+		ig1 = xfb_lutlookupg(y1, cr, cb);
+		ib1 = xfb_lutlookupb(y1, cb);
+		ir2 = xfb_lutlookupr(y2, cr);
+		ig2 = xfb_lutlookupg(y2, cr, cb);
+		ib2 = xfb_lutlookupb(y2, cb);
+
+		((u8 *)xfbConv + rgbfaralong)[0] = ir1;
+		((u8 *)xfbConv + rgbfaralong)[1] = ig1;
+		((u8 *)xfbConv + rgbfaralong)[2] = ib1;
+		((u8 *)xfbConv + rgbfaralong)[3] = ir2;
+		((u8 *)xfbConv + rgbfaralong)[4] = ig2;
+		((u8 *)xfbConv + rgbfaralong)[5] = ib2;
 	}
 	liybmp_save("xfb.bmp", 640, 480, xfbConv);
 	free(xfbConv);
