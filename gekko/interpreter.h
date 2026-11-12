@@ -3,7 +3,7 @@
 
 #include "../global/type.h"
 
-//#define INTERPRETER_PRINT
+#define INTERPRETER_PRINT
 
 /* SPR reference table */
 extern u32 ** sprtable;

@@ -37,7 +37,7 @@ int main(void) {
 	fclose(indol);
 
 	while(1) {
-		if(cycles > 486000000) break;
+		if(cycles > 4860000) break;
 
 		if((msr >> 12) & 1) { //exception enable bit 
 			//printf("IM GREEN\n");
