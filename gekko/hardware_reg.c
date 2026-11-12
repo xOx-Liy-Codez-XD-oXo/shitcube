@@ -42,10 +42,10 @@ void hardwarereg_write32(u32 addr, u32 data) {
 	u32 maskaddr = addr & 0x0FFF;
 	switch((addr >> 8) & 0xFF) { //mask 0000FF00 and find which registerblock
 		case 0x20:
-			((u32 *)((u8 *)viregs + maskaddr))[0] = data;
+			((u32 *)((u8 *)viregs + maskaddr))[0] = swaponle_u32(data);
 			break;
 		case 0x30:
-			((u32 *)((u8 *)piregs + maskaddr))[0] = data;
+			((u32 *)((u8 *)piregs + maskaddr))[0] = swaponle_u32(data);
 			break;
 	}
 	

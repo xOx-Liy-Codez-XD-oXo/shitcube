@@ -46,7 +46,8 @@ int main(void) {
 				numblanks++;
 				srr[0] = nia;
 				srr[1] = msr;
-				memory_write32(0xcc003000, 0x100);
+				memory_write32(0xcc003000, 0x00000100);
+				memory_write32(0xcc003004, 0x00000100);
 				nia = 0x80000500;
 			}
 		}
@@ -66,8 +67,9 @@ int main(void) {
 		opcode_execute(opcode, swopcode);
 		#ifdef INTERPRETER_PRINT
 		putchar('\n');
+		for(int i = 0; i < 32; i++) printf("r%d %x, ", i, gpr[i]);
+		putchar('\n');
 		#endif
-		if(pc == 0x8000545c) {printf("im blue\n");break;}
 	}
 
 	ramdump = fopen("out.raw", "wb");

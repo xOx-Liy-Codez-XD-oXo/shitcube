@@ -192,7 +192,6 @@ void ii_addze(u32 opcode, u32 swopcode) {
 }
 
 void ii_and(u32 opcode, u32 swopcode) {
-	
 	u8 ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1F, rs = (swopcode >> 21) & 0x1F,
 	rc = swopcode & 1;
 
@@ -208,7 +207,6 @@ void ii_and(u32 opcode, u32 swopcode) {
 }
 
 void ii_andc(u32 opcode, u32 swopcode) {
-	
 	u8 ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1F, rs = (swopcode >> 21) & 0x1F,
 	rc = swopcode & 1;
 
