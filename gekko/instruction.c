@@ -1186,13 +1186,13 @@ void ii_srw(u32 opcode, u32 swopcode) {
 void ii_sraw(u32 opcode, u32 swopcode) {
 	u8 rs = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F, rb = (swopcode >> 11) & 0x1f;
 
-	if(gpr[rb] & 32) gpr[ra] = 0;
-	else gpr[ra] = (gpr[rs] >> (gpr[rb] & 31));
+	if(((s32 *)gpr)[rb] & 32) ((s32 *)gpr)[ra] = 0;
+	else ((s32 *)gpr)[ra] = (((s32 *)gpr)[rs] >> (((s32 *)gpr)[rb] & 31));
 
 	ii_cr0thing(((s32 *)gpr)[ra]);
 
 	#ifdef II_PRINT
-	printf("Sraw, rs 0x%x, ra 0x%x, rb 0x%x .. acting the same as srw for now", rs, ra, rb);
+	printf("Sraw, rs 0x%x, ra 0x%x, rb 0x%x", rs, ra, rb);
 	#endif
 
 	cycles += 1;
@@ -1201,12 +1201,12 @@ void ii_sraw(u32 opcode, u32 swopcode) {
 void ii_srawi(u32 opcode, u32 swopcode) {
 	u8 rs = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F, sh = (swopcode >> 11) & 0x1F;
 
-	gpr[ra] = gpr[rs] >> sh;
+	((s32 *)gpr)[ra] = ((s32 *)gpr)[rs] >> sh;
 
 	ii_cr0thing(((s32 *)gpr)[ra]);
 
 	#ifdef II_PRINT
-	printf("Srawi, rs 0x%x, ra 0x%x.. acting the same as srw for now", rs, ra);
+	printf("Srawi, rs 0x%x, ra 0x%x", rs, ra);
 	#endif
 
 	cycles += 1;
