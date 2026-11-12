@@ -67,10 +67,10 @@ sia,     /* sampled instruction addr reg */
 usia,    /* user sampled instruction addr reg */
 wpar;    /* write gather pipe addr reg */
 
-void * tablehole;
+void * tablehole = NULL;
 
 /* SPR reference table */
-u32 ** sprtable;
+u32 ** sprtable = NULL;
 
 /* Opcode execute tables */
 void (**opcode_executetablea)(u32, u32);
