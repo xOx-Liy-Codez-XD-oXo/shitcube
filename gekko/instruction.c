@@ -13,7 +13,7 @@
 #endif
 
 void ii_invalid(u32 opcode, u32 swopcode) {
-	printf("Invalid\n");
+	printf("Invalid %08x\n", pc);
 	exit(10000000);
 }
 
@@ -128,6 +128,22 @@ void ii_addic(u32 opcode, u32 swopcode) {
 
 	#ifdef II_PRINT
 	printf("Addic, rd 0x%x, ra 0x%x, simm 0x%x. r%d now %08x. Can't carry yet ..", rd, ra, simm, rd, ((u32 *)gpr)[rd]);
+	#endif
+
+	cycles += 1;
+}
+
+void ii_addicr(u32 opcode, u32 swopcode) {
+	
+	u8 rd = (swopcode >> 21) & 0x1F, ra = (swopcode >> 16) & 0x1F;
+	s16 simm = (swopcode & 0xFFFF);
+	
+	((u32 *)gpr)[rd] = ((u32 *)gpr)[ra] + (u32)simm;
+
+	ii_cr0thing(((s32 *)gpr)[rd]);
+
+	#ifdef II_PRINT
+	printf("Addic., rd 0x%x, ra 0x%x, simm 0x%x. r%d now %08x. Can't carry yet ..", rd, ra, simm, rd, ((u32 *)gpr)[rd]);
 	#endif
 
 	cycles += 1;

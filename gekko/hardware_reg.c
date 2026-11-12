@@ -40,13 +40,16 @@ void hardwarereg_free(void) {
 
 void hardwarereg_write32(u32 addr, u32 data) {
 	u32 maskaddr = addr & 0x0FFF;
-	switch((addr >> 8) & 0xFF) {
+	switch((addr >> 8) & 0xFF) { //mask 0000FF00 and find which registerblock
 		case 0x20:
 			((u32 *)((u8 *)viregs + maskaddr))[0] = data;
 			break;
+		case 0x30:
+			((u32 *)((u8 *)piregs + maskaddr))[0] = data;
+			break;
 	}
 	
-	((u32 *)((u8 *)hardwareregs + maskaddr))[0] = swaponle_u32(data);
+	//((u32 *)((u8 *)hardwareregs + maskaddr))[0] = swaponle_u32(data);
 }
 
 void hardwarereg_write16(u32 addr, u16 data) {
@@ -55,9 +58,12 @@ void hardwarereg_write16(u32 addr, u16 data) {
 		case 0x20:
 			((u16 *)((u8 *)viregs + maskaddr))[0] = data;
 			break;
+		case 0x30:
+			((u16 *)((u8 *)piregs + maskaddr))[0] = data;
+			break;
 	}
 
-	((u16 *)((u8 *)hardwareregs + maskaddr))[0] = swaponle_u16(data);
+	//((u16 *)((u8 *)hardwareregs + maskaddr))[0] = swaponle_u16(data);
 }
 
 int dspread = 0;
@@ -65,7 +71,10 @@ int dspread = 0;
 u16 hardwarereg_read16(u32 addr) {
 	u32 maskaddr = addr & 0x0FFF;
 	switch((addr >> 8) & 0xFF) {
-		case 0x50:
+		case 0x30: //pi
+			printf("HELO \n");
+			return swaponle_u16(*(u16 *)((u8 *)piregs + maskaddr));
+		case 0x50: //dsp
 			/* todo forward to a dsp interpreter ig */
 			switch(addr & 0xFF) {
 				case 0x04:
@@ -78,17 +87,22 @@ u16 hardwarereg_read16(u32 addr) {
 					return 0x0020;
 			}
 	}
-	return swaponle_u16(*(u16 *)((u8 *)hardwareregs + maskaddr));
+	//return swaponle_u16(*(u16 *)((u8 *)hardwareregs + maskaddr));
+	return 0x0000;
 }
 
 u32 hardwarereg_read32(u32 addr) {
 	u32 maskaddr = addr & 0x0FFF;
 	switch((addr >> 8) & 0xFF) {
-		case 0x50:
+		case 0x30: //pi
+			printf("HELO\n");
+			return swaponle_u32(*(u32 *)((u8 *)piregs + maskaddr));
+		case 0x50: //dsp
 			return 0x80000000;
 	}
 	
-	return swaponle_u32(*(u32 *)((u8 *)hardwareregs + maskaddr));
+	//return swaponle_u32(*(u32 *)((u8 *)hardwareregs + maskaddr)); // IF YOU UNCOMMENT TIS YOUR DICK FALLS OFF
+	return 0x00000000;
 }
 
 void hardwarereg_printall(void) {

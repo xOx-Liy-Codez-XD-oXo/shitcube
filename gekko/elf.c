@@ -75,4 +75,5 @@ void elf_loadFromFile(FILE * elffile) {
 	/* We dont do section header yet */
 
 	pc = theelf.entry;
+	nia = theelf.entry;
 }

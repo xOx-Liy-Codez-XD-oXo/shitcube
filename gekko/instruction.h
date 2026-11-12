@@ -11,6 +11,7 @@ void ii_addc(u32 opcode, u32 swopcode);
 void ii_adde(u32 opcode, u32 swopcode);
 void ii_addi(u32 opcode, u32 swopcode);
 void ii_addic(u32 opcode, u32 swopcode);
+void ii_addicr(u32 opcode, u32 swopcode);
 void ii_addis(u32 opcode, u32 swopcode);
 void ii_addme(u32 opcode, u32 swopcode);
 void ii_addze(u32 opcode, u32 swopcode);

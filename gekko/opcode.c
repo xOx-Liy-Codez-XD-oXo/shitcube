@@ -59,7 +59,7 @@ void opcode_execute(u32 opcode, u32 swopcode) {
 		ii_cmpli, /* 001010 cmpli */
 		ii_cmpi, /* 001011 cmpi */
 		ii_addic, /* 001100 addic */
-		ii_nop, /* 001101 addic. */
+		ii_addicr, /* 001101 addic. */
 		ii_addi, /* 001110 addi */
 		ii_addis, /* 001111 addis */
 		ii_bc, /* 010000 bc */

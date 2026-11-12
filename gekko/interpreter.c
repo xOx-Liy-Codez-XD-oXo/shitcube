@@ -246,7 +246,7 @@ void interpreter_setup(void) {
 	interpreter_setup_tables();
 	/* printf("INTERPRETER SETUP!\n"); */
 
-	msr = 0x00002032;
+	msr = 0x00000000;
 
 	cycles = 0;
 }

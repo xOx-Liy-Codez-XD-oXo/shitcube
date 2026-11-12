@@ -5,3 +5,5 @@ xfb.bmp
 out.raw
 
 *.dol
+*.elf
+*.txt

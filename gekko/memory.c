@@ -31,8 +31,8 @@ void memory_freeArenas(void) {
 
 u32 memory_read32(u32 addr) {
 	/* printf("MEMORY read32 %08x  ", addr); */
-	if(((addr >> 24) & 0xFF) == 0xCC) {
-		hardwarereg_read32(addr);
+	if(((addr >> 24) & 0x0F) == 0x0C) {
+		return hardwarereg_read32(addr);
 	}
 	addr &= ~0xF0000000;
 	if(addr > 25165824) {
@@ -44,7 +44,7 @@ u32 memory_read32(u32 addr) {
 
 u16 memory_read16(u32 addr) {
 	/* printf("MEMORY read16 %08x  ", addr); */
-	if(((addr >> 24) & 0xFF) == 0xCC) {
+	if(((addr >> 24) & 0x0F) == 0x0C) {
 		return hardwarereg_read16(addr);
 	}
 	addr &= ~0xF0000000;
@@ -57,7 +57,7 @@ u16 memory_read16(u32 addr) {
 
 u8 memory_read8(u32 addr) {
 	/* printf("MEMORY read16 %08x  ", addr); */
-	if(((addr >> 24) & 0xFF) == 0xCC) {
+	if(((addr >> 24) & 0x0F) == 0x0C) {
 		return hardwarereg_read16(addr);
 	}
 	addr &= ~0xF0000000;
@@ -70,7 +70,7 @@ u8 memory_read8(u32 addr) {
 
 void memory_write32(u32 addr, u32 data) {
 	/* printf("MEMORY write32 %08x  ", addr); */
-	if(((addr >> 24) & 0xFF) == 0xCC) {
+	if(((addr >> 24) & 0x0F) == 0x0C) {
 		hardwarereg_write32(addr, data);
 		return;
 	}
@@ -84,7 +84,7 @@ void memory_write32(u32 addr, u32 data) {
 
 void memory_write16(u32 addr, u16 data) {
 	/* printf("MEMORY write16 %08x  ", addr); */
-	if(((addr >> 24) & 0xFF) == 0xCC) {
+	if(((addr >> 24) & 0x0F) == 0x0C) {
 		hardwarereg_write16(addr, data);
 		return;
 	}
@@ -98,7 +98,7 @@ void memory_write16(u32 addr, u16 data) {
 
 void memory_write8(u32 addr, u8 data) {
 	/* printf("MEMORY write8 %08x  ", addr); */
-	if(((addr >> 24) & 0xFF) == 0xCC) printf("\nREGBLOCK WRITE8");
+	if(((addr >> 24) & 0x0F) == 0x0C) printf("\nREGBLOCK WRITE8");
 	addr &= ~0xF0000000;
 	if(addr > 25165824) {
 		printf("\nMEMORY unimpl write8  %08x", addr);

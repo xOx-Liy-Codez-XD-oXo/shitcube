@@ -18,12 +18,12 @@ int main(void) {
 	float y1, y2, cb, cr;
 	int ir1, ig1, ib1, ir2, ig2, ib2;
 	int h, w;
-	u64 instructions;
+	u64 numblanks = 0;
 	u32 opcode, swopcode;
 	void * xfbbase, * xfbConv;
 	FILE * ramdump;/* , * xfbdump; */
 
-	indol = fopen("pageflip.dol", "rb");
+	indol = fopen("consoletest.elf", "rb");
 	if(!indol) return -1;
 	
 	printf("huzzah\n");
@@ -33,18 +33,32 @@ int main(void) {
 	interpreter_setup();
 	hardwarereg_setup();
 
-	dol_loadFromFile(indol);
+	elf_loadFromFile(indol);
 	fclose(indol);
 
-	for(instructions = 0; instructions < 486000; instructions++) {
-		nia = pc + 4;
+	while(1) {
+		if(cycles > 486000000) break;
+
+		if((msr >> 12) & 1) { //exception enable bit 
+			//printf("IM GREEN\n");
+			if(cycles > ((486000000/60) * numblanks)) { //Time for blank
+				printf("Blank\n");
+				numblanks++;
+				srr[0] = nia;
+				srr[1] = msr;
+				memory_write32(0xcc003000, 0x100);
+				nia = 0x80000500;
+			}
+		}
 
 		tb = ~(u64)0 - cycles;
 		tbl = tb & 0xFFFFFFFF;
 		tbu = (tb >> 32) & 0xFFFFFFFF;
 
-		if((instructions % 1000) == 0) printf("%08llu instructions, %08llu cycles, %lld seconds elapsed\n", instructions, cycles, cycles / 486000000);
-		opcode = memory_usread32(pc);
+		//if((instructions % 1000) == 0) printf("%08llu instructions, %08llu cycles, %lld seconds elapsed\n", instructions, cycles, cycles / 486000000);
+		opcode = memory_usread32(nia);
+		pc = nia;
+		nia = pc + 4;
 		swopcode = swaponle_u32(opcode);
 		#ifdef INTERPRETER_PRINT
 		printf("%08x, %08x ", pc, swopcode);
@@ -53,7 +67,7 @@ int main(void) {
 		#ifdef INTERPRETER_PRINT
 		putchar('\n');
 		#endif
-		pc = nia;
+		if(pc == 0x8000545c) {printf("im blue\n");break;}
 	}
 
 	ramdump = fopen("out.raw", "wb");

@@ -48,4 +48,5 @@ void dol_loadFromFile(FILE * dolfile) {
 		fread((u8 *)mem_arenaA + (thedol.loadaddrs[j] & ~0x80000000), thedol.sectionsizes[j], 1, dolfile);
 	}
 	pc = thedol.entrypoint;
+	nia = thedol.entrypoint;
 }
