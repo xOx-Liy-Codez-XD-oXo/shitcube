@@ -236,12 +236,13 @@ void interpreter_setup(void) {
 	ummcr = &(regs[172]);    /* 2 */
 	upmc = &(regs[174]);     /* 4 */
 
-	if(!tablehole) tablehole = malloc((16*1024*sizeof(void*))+127);
-	sprtable = (void *)(((uip)tablehole + 63) & ~63);
-	opcode_executetablea = ((void (**)(u32, u32))sprtable + (1024*sizeof(void*)));
-	opcode_executetableb = opcode_executetablea + (1024*sizeof(void*));
-	opcode_executetablec = opcode_executetableb + (1024*sizeof(void*));
-	opcode_executetabled = opcode_executetablec + (1024*sizeof(void*));
+	tablehole = malloc((64*1024*sizeof(uip)));
+	sprtable = (void *)(((uip)tablehole + 63) & ~63ull);
+	//sprtable = tablehole;
+	opcode_executetablea = ((void (**)(u32, u32))sprtable + (1024*sizeof(uip)));
+	opcode_executetableb = opcode_executetablea + (1024*sizeof(uip));
+	opcode_executetablec = opcode_executetableb + (1024*sizeof(uip));
+	opcode_executetabled = opcode_executetablec + (1024*sizeof(uip));
 
 	interpreter_setup_tables();
 	/* printf("INTERPRETER SETUP!\n"); */

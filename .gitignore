@@ -1,9 +1,10 @@
 **/.DS_Store
 
 shitcube
-xfb.bmp
-out.raw
 
+*.dSYM
+*.bmp
+*.raw
 *.dol
 *.elf
 *.txt

@@ -1,4 +1,5 @@
 gcc main.c \
+\
 gekko/dol.c \
 gekko/elf.c \
 gekko/hardware_reg.c \
@@ -8,4 +9,11 @@ gekko/memory.c \
 gekko/opcode.c \
 global/endian.c \
 graphics/xfb.c \
--o shitcube -Wall -Wpedantic -std=c99 -DLE -O3 -ffast-math
+\
+-o shitcube \
+\
+-Wall -Wpedantic \
+-std=c99 \
+-O3 -ffast-math \
+\
+-DLE -DSHITCUBE_SDL -lsdl2 
