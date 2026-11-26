@@ -83,6 +83,7 @@ int main(int argc, char ** argv) {
 	}
 	windowSurface = SDL_GetWindowSurface(window);
 	SDL_Event event;
+	int exitrequest = 0;
 	#endif
 
 	//Assume a large xfb area .. boo
@@ -90,8 +91,7 @@ int main(int argc, char ** argv) {
 
 	printf("Time to start cycling .. \n");
 	while(1) {
-		if(cycles > 486000000) break;
-
+		//if(cycles > 486000000) break;
 		if(cycles > ((486000000/60) * numblanks)) { //Time for blank
 			printf("Blank\n");
 			numblanks++;
@@ -142,9 +142,10 @@ int main(int argc, char ** argv) {
 
 			#ifdef SHITCUBE_SDL
 			while(SDL_PollEvent(&event) != 0) {
-				if(event.type == SDL_QUIT) break;
-				if(event.type == SDL_WINDOWEVENT) if(event.window.event == SDL_WINDOWEVENT_CLOSE) break;
+				if(event.type == SDL_QUIT) exitrequest = 1;
+				if(event.type == SDL_WINDOWEVENT) if(event.window.event == SDL_WINDOWEVENT_CLOSE) exitrequest = 1;
 			}
+			if(exitrequest) break;
 			//printf("%s\n", SDL_GetError());
 			windowSurface = SDL_GetWindowSurface(window);
 			if(!windowSurface) {
